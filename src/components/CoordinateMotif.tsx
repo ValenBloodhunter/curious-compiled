@@ -1,186 +1,68 @@
-
-import type { PointerEvent } from "react";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from "motion/react";
+import { useState, type PointerEvent } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
 
 export default function CoordinateMotif() {
-  const reduceMotion = useReducedMotion();
+  const reduced = useReducedMotion();
+  const [engaged, setEngaged] = useState(false);
+  const x = useMotionValue(253);
+  const y = useMotionValue(139);
+  const sx = useSpring(x, { stiffness: 105, damping: 18, mass: .65 });
+  const sy = useSpring(y, { stiffness: 105, damping: 18, mass: .65 });
 
-  // Default position is deliberately off-center.
-  const pointX = useMotionValue(240);
-  const pointY = useMotionValue(127);
-
-  const springConfig = {
-    stiffness: 110,
-    damping: 18,
-    mass: 0.6,
-  };
-
-  const smoothX = useSpring(pointX, springConfig);
-  const smoothY = useSpring(pointY, springConfig);
-
-  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
-    if (reduceMotion || event.pointerType !== "mouse") return;
-
+  function move(event: PointerEvent<HTMLDivElement>) {
+    if (reduced || event.pointerType !== "mouse") return;
     const rect = event.currentTarget.getBoundingClientRect();
-
-    const x = (event.clientX - rect.left) / rect.width;
-    const y = (event.clientY - rect.top) / rect.height;
-
-    // Small, controlled movement. Not a cursor follower.
-    pointX.set(240 + (x - 0.5) * 35);
-    pointY.set(127 + (y - 0.5) * 35);
+    const fx = (event.clientX - rect.left) / rect.width;
+    const fy = (event.clientY - rect.top) / rect.height;
+    x.set(253 + (fx - .5) * 46);
+    y.set(139 + (fy - .5) * 46);
   }
-
-  function resetPoint() {
-    pointX.set(240);
-    pointY.set(127);
+  function leave() {
+    x.set(253);
+    y.set(139);
+    setEngaged(false);
   }
 
   return (
-    <div
-      className="relative w-full max-w-[420px]"
-      onPointerMove={handlePointerMove}
-      onPointerLeave={resetPoint}
-    >
-      <div className="mb-4 flex items-center justify-between font-mono text-[10px] tracking-[0.15em] text-muted">
-        <span>FIG. 001</span>
-        <span>COORDINATE STUDY</span>
+    <div className="instrument-panel max-w-[480px] p-4 sm:p-5 lg:ml-auto" onPointerMove={move} onPointerEnter={(e) => { if (e.pointerType === "mouse" && !reduced) setEngaged(true); }} onPointerLeave={leave}>
+      <div className="flex items-center justify-between border-b border-line/70 pb-4 font-mono text-[9px] tracking-[.16em] text-muted sm:text-[10px]">
+        <span><span className="mr-2 text-accent">✳</span> MOTION STUDY / 001</span>
+        <span>SYS: ACTIVE</span>
       </div>
-
-      <svg
-        viewBox="0 0 420 320"
-        className="h-auto w-full"
-        role="img"
-        aria-label="A coordinate diagram with a point that gently responds to mouse movement"
-      >
-        {/* Outer framing details */}
-        <path
-          d="M 20 35 V 15 H 40"
-          stroke="var(--line)"
-          strokeWidth="1"
-          fill="none"
-        />
-
-        <path
-          d="M 380 15 H 400 V 35"
-          stroke="var(--line)"
-          strokeWidth="1"
-          fill="none"
-        />
-
-        <path
-          d="M 20 285 V 305 H 40"
-          stroke="var(--line)"
-          strokeWidth="1"
-          fill="none"
-        />
-
-        <path
-          d="M 380 305 H 400 V 285"
-          stroke="var(--line)"
-          strokeWidth="1"
-          fill="none"
-        />
-
-        {/* Horizontal and vertical axes */}
-        <line
-          x1="55"
-          y1="155"
-          x2="365"
-          y2="155"
-          stroke="var(--line)"
-          strokeWidth="1"
-        />
-
-        <line
-          x1="210"
-          y1="25"
-          x2="210"
-          y2="285"
-          stroke="var(--line)"
-          strokeWidth="1"
-        />
-
-        {/* Circular coordinate boundaries */}
-        <circle
-          cx="210"
-          cy="155"
-          r="104"
-          stroke="var(--muted)"
-          strokeOpacity="0.55"
-          strokeWidth="1"
-          fill="none"
-        />
-
-        <circle
-          cx="210"
-          cy="155"
-          r="68"
-          stroke="var(--line)"
-          strokeWidth="1"
-          strokeDasharray="3 8"
-          fill="none"
-        />
-
-        {/* Center origin */}
-        <circle
-          cx="210"
-          cy="155"
-          r="3"
-          fill="var(--muted)"
-        />
-
-        {/* Measurement marks */}
-        {[106, 158, 262, 314].map((x) => (
-          <line
-            key={x}
-            x1={x}
-            y1="150"
-            x2={x}
-            y2="160"
-            stroke="var(--muted)"
-            strokeOpacity="0.6"
-          />
-        ))}
-
-        {/* Interactive point */}
-        <motion.circle
-          cx={smoothX}
-          cy={smoothY}
-          r="13"
-          fill="var(--accent)"
-          fillOpacity="0.12"
-        />
-
-        <motion.circle
-          cx={smoothX}
-          cy={smoothY}
-          r="4.5"
-          fill="var(--accent)"
-        />
-
-        {/* Technical labels */}
-        <g
-          fill="var(--muted)"
-          fontFamily="'IBM Plex Mono', monospace"
-          fontSize="10"
-        >
-          <text x="370" y="159">X</text>
-          <text x="214" y="22">Y</text>
-          <text x="217" y="170">0</text>
-          <text x="30" y="298">REF / 001</text>
-          <text x="318" y="298">SYS / ACTIVE</text>
+      <svg viewBox="0 0 420 360" className="h-auto w-full" role="img" aria-label="Interactive engineering coordinate diagram with a glowing point that moves slightly toward the cursor">
+        <defs>
+          <linearGradient id="orbit-gradient" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#90f4e2"/><stop offset=".55" stopColor="#7dbeff"/><stop offset="1" stopColor="#b9a4ff"/></linearGradient>
+          <radialGradient id="point-aura"><stop stopColor="#86f4da" stopOpacity=".3"/><stop offset="1" stopColor="#86f4da" stopOpacity="0"/></radialGradient>
+        </defs>
+        <g stroke="#384862" strokeWidth="1" opacity=".85">
+          <path d="M20 35V20H35 M385 20H400V35 M20 325V340H35 M385 340H400V325" fill="none"/>
+          <line x1="43" y1="185" x2="378" y2="185" />
+          <line x1="210" y1="17" x2="210" y2="345" />
+          <line x1="92" y1="67" x2="328" y2="303" strokeDasharray="4 11" opacity=".45" />
+          <line x1="328" y1="67" x2="92" y2="303" strokeDasharray="4 11" opacity=".45" />
+        </g>
+        <circle cx="210" cy="185" r="124" stroke="url(#orbit-gradient)" strokeOpacity=".65" strokeWidth="1.2" fill="none" />
+        <circle cx="210" cy="185" r="91" stroke="#4a6280" strokeOpacity=".4" strokeWidth="1" fill="none" strokeDasharray="2 9" />
+        <g className="orbit-spin" style={reduced ? { animation: "none" } : undefined}>
+          <circle cx="210" cy="185" r="111" stroke="#b4a9ff" strokeOpacity=".5" fill="none" strokeDasharray="4 14" />
+          <circle cx="210" cy="74" r="2.5" fill="#bba7ff" />
+        </g>
+        <circle cx="210" cy="185" r="3" fill="#77879d" />
+        <g stroke="#58687f" strokeWidth="1">
+          <path d="M210 53v17 M210 300v17 M78 185h17 M325 185h17"/>
+        </g>
+        <motion.line x1="210" y1="185" x2={sx} y2={sy} stroke="#8af4dd" strokeOpacity=".52" strokeWidth="1" strokeDasharray="3 6" />
+        <motion.circle cx={sx} cy={sy} r="30" fill="url(#point-aura)" />
+        <motion.circle className="coordinate-pulse" cx={sx} cy={sy} r="13" fill="none" stroke="#8af4dd" strokeOpacity=".8" strokeWidth="1" />
+        <motion.circle cx={sx} cy={sy} r="4.5" fill="#a3fce8" />
+        <g fill="#95aac8" fontFamily="'IBM Plex Mono',monospace" fontSize="10" letterSpacing="1.1">
+          <text x="378" y="179">X</text><text x="219" y="23">Y</text><text x="218" y="199">0</text>
+          <text x="38" y="340">REF / E-001</text><text x="319" y="340">R / 124</text>
         </g>
       </svg>
-
-      <div className="mt-1 flex items-center justify-between border-t border-line pt-4 font-mono text-[10px] tracking-widest text-muted">
-        <span>INPUT → OUTPUT</span>
-        <span className="text-accent">●</span>
+      <div className="flex items-center justify-between border-t border-line/70 pt-4 font-mono text-[9px] tracking-[.13em] text-muted sm:text-[10px]">
+        <span>INPUT <span className="text-accent">↗</span> EXPERIMENT</span>
+        <span className="text-accent">{engaged ? "POINTER ENGAGED" : "AT REST"}</span>
       </div>
     </div>
   );
