@@ -7,12 +7,15 @@ import SectionHeading from "./components/SectionHeading";
 import ProjectRow from "./components/ProjectRow";
 import About from "./components/About";
 import Explorations from "./components/Explorations";
+import Contact from "./components/Contact";
+import Footer from "./components/Footer";
 
 import { projects } from "./data/projects";
 
 export default function App() {
   return (
     <div className="min-h-svh bg-bg text-ink">
+      {/* NAVIGATION */}
       <Navbar />
 
       <main id="top">
@@ -59,23 +62,15 @@ export default function App() {
         {/* ABOUT */}
         <About />
 
-        {/* EXPLORATIONS */}
+        {/* CURRENT EXPLORATIONS */}
         <Explorations />
 
-        {/* CONTACT — TEMPORARY */}
-        <section
-          id="contact"
-          className="page-shell border-t border-line py-28"
-        >
-          <p className="font-mono text-xs tracking-widest text-accent">
-            04 / SAY HELLO
-          </p>
-
-          <h2 className="mt-6 font-display text-5xl font-bold">
-            Have an idea?
-          </h2>
-        </section>
+        {/* CONTACT */}
+        <Contact />
       </main>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }
