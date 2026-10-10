@@ -5,6 +5,8 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import SectionHeading from "./components/SectionHeading";
 import ProjectRow from "./components/ProjectRow";
+import About from "./components/About";
+import Explorations from "./components/Explorations";
 
 import { projects } from "./data/projects";
 
@@ -14,6 +16,7 @@ export default function App() {
       <Navbar />
 
       <main id="top">
+        {/* HERO */}
         <Hero />
 
         {/* SELECTED WORK */}
@@ -45,6 +48,7 @@ export default function App() {
             className="group mt-12 inline-flex min-h-11 items-center gap-3 font-mono text-xs tracking-widest text-muted transition-colors hover:text-accent"
           >
             MORE EXPERIMENTS ON GITHUB
+
             <ArrowUpRight
               size={16}
               className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
@@ -52,21 +56,13 @@ export default function App() {
           </a>
         </section>
 
-        {/* ABOUT — temporary */}
-        <section
-          id="about"
-          className="page-shell border-t border-line py-28"
-        >
-          <p className="font-mono text-xs tracking-widest text-accent">
-            02 / ABOUT
-          </p>
+        {/* ABOUT */}
+        <About />
 
-          <h2 className="mt-6 font-display text-5xl font-bold">
-            More than a stack.
-          </h2>
-        </section>
+        {/* EXPLORATIONS */}
+        <Explorations />
 
-        {/* CONTACT — temporary */}
+        {/* CONTACT — TEMPORARY */}
         <section
           id="contact"
           className="page-shell border-t border-line py-28"
