@@ -1,6 +1,12 @@
 
+import { ArrowUpRight } from "lucide-react";
+
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import SectionHeading from "./components/SectionHeading";
+import ProjectRow from "./components/ProjectRow";
+
+import { projects } from "./data/projects";
 
 export default function App() {
   return (
@@ -10,25 +16,43 @@ export default function App() {
       <main id="top">
         <Hero />
 
-        {/* Temporary Work Section */}
+        {/* SELECTED WORK */}
         <section
           id="work"
-          className="page-shell border-t border-line py-28"
+          className="page-shell border-t border-line py-24 sm:py-32"
         >
-          <p className="font-mono text-xs tracking-widest text-accent">
-            01 / SELECTED WORK
-          </p>
+          <SectionHeading
+            number="01"
+            label="SELECTED WORK"
+            title="Proof of curiosity."
+            description="A few things I've built, broken, fixed, and learned from."
+          />
 
-          <h2 className="mt-6 font-display text-5xl font-bold">
-            Proof of curiosity.
-          </h2>
+          <div className="mt-16 sm:mt-24">
+            {projects.map((project, index) => (
+              <ProjectRow
+                key={project.id}
+                project={project}
+                index={index}
+              />
+            ))}
+          </div>
 
-          <p className="mt-4 text-muted">
-            Selected projects will appear here.
-          </p>
+          <a
+            href="https://github.com/ValenBloodhunter?tab=repositories"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mt-12 inline-flex min-h-11 items-center gap-3 font-mono text-xs tracking-widest text-muted transition-colors hover:text-accent"
+          >
+            MORE EXPERIMENTS ON GITHUB
+            <ArrowUpRight
+              size={16}
+              className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
+            />
+          </a>
         </section>
 
-        {/* Temporary About Section */}
+        {/* ABOUT — temporary */}
         <section
           id="about"
           className="page-shell border-t border-line py-28"
@@ -42,7 +66,7 @@ export default function App() {
           </h2>
         </section>
 
-        {/* Temporary Contact Section */}
+        {/* CONTACT — temporary */}
         <section
           id="contact"
           className="page-shell border-t border-line py-28"
