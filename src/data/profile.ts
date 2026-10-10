@@ -10,9 +10,9 @@ export type Profile = {
 
 export const profile: Profile = {
   // Fill these in before publishing.
-  displayName: "",
-  publicEmail: "",
-  linkedinUrl: "",
+  displayName: "Debashis Das",
+  publicEmail: "debashisdas.work@gmail.com",
+  linkedinUrl: "https://www.linkedin.com/in/debashis-das-22a6a7432",
 
   // Already configured.
   githubUrl: "https://github.com/ValenBloodhunter",
