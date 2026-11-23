@@ -1,23 +1,5 @@
 import { profile } from "../data/profile";
-
-const asciiTorus = `                    $$$$$$$$@@@@$
-               $$#############$$$$$$$
-             ##******************#####$#
-           **!!!!!!!!!!!!!!!!**!!!*****###
-          !!!==!==============!!!!!!!!******
-         =====;;;:::::::::::::;;;===!!!!!!*!!
-         ;;;;::~~---,,,,,,---~~~:::;;===!!!!!!
-        ;;::~~-,,,...........,,--~~:::;;====!=
-        ::~~-,...................,--~~::;;;===
-        ~~--,..........    ........,--~~:::;;;;
-         --,,........,        .......,--~~:::::
-         ,-,,,,......;=!;     :......,,--~~~:~
-          ,,,,,,,--~:!*#$@$$*!:......,,----~~-
-           .,,--~~:;=!*#$$$#*!;~,,.,,,,------
-             .,--~:;=!***#**!!=:~---,,,,,,,.
-               .,-~:;=!*!*!!!=;::~--,,,,..
-                  ..-~:;;;;;;::~~--,...
-                        ...........`;
+import AsciiBlackHole from "./AsciiBlackHole";
 
 export default function Hero() {
   return (
@@ -34,10 +16,7 @@ export default function Hero() {
           <a className="text-link" href={profile.githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
-      <figure className="hero-art">
-        <pre aria-hidden="true">{asciiTorus}</pre>
-        <figcaption>A little order in the noise.</figcaption>
-      </figure>
+      <AsciiBlackHole />
     </section>
   );
 }

@@ -36,7 +36,9 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .hero h1 { margin: 0; font-family: var(--font-display); font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 400; line-height: 1.08; letter-spacing: -.065em; }
 .hero-art { min-width: 0; margin: 0; text-align: center; }
 .hero-art pre { display: inline-block; margin: 0; color: #b4afc6; font-family: ui-monospace, "Cascadia Code", "Courier New", monospace; font-size: clamp(9px, 1.05vw, 12px); font-weight: 400; line-height: 1.2; letter-spacing: 0; text-align: left; user-select: none; }
-.hero-art figcaption { margin-top: 28px; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12px; color: var(--color-muted); }
+.hero-art figcaption { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 20px; margin-top: 20px; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12px; color: var(--color-muted); }
+.hero-art button { min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: #64646d; text-underline-offset: 4px; transition: color 180ms ease; }
+.hero-art button:hover { color: var(--color-accent); }
 .hero-description { max-width: 430px; margin: 30px 0 0; font-size: 17px; line-height: 1.85; color: var(--color-muted); }
 .hero-links { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin-top: 30px; font-size: 14px; }
 .text-link { text-decoration: underline; text-decoration-color: #64646d; text-underline-offset: 5px; text-decoration-thickness: 1px; }
