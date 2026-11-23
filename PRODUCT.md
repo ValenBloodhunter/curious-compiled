@@ -11,7 +11,7 @@ Personal portfolio of Debashis Das, a B.Tech student at SRM University AP. Inten
 
 ## Current brief
 
-The user requested a complete redesign matching the Neural Interface composition at https://motionsites.ai/?prompt=neural-interface, a commanding central character, and a cinematic experimental feel. Copy may be rephrased; fictional achievements and projects are unnecessary. The central generated character is an artwork, not the owner's likeness. The dark neural direction replaces the previous light/dark glass theme.
+The user requested a redesign inspired by https://resn.co.nz/. A single interactive sculpture opens into original artwork. Visitors can also go directly to the projects or use the site index.
 
 ## Implementation
 

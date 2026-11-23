@@ -1,17 +1,40 @@
-import { ArrowUpRight } from "lucide-react";
-import { profile } from "../data/profile";
-
+﻿import { useRef } from "react";
+import { Menu, X } from "lucide-react";
 export default function Navbar() {
+  const menu = useRef<HTMLDialogElement>(null);
   return (
-    <header className="site-nav page-shell">
-      <a className="site-name" href="#top" aria-label="Curious Compiled, back to top">
-        <span className="brand-symbol" aria-hidden="true">c/c</span>
-        <span>curious<span className="brand-comma">,</span><br />compiled.</span>
+    <header className="site-nav">
+      <a href="#top" className="monogram" aria-label="Curious Compiled home">
+        c/c.
       </a>
-      <nav className="nav-links" aria-label="Primary navigation">
-        <a href="#work">Work</a><a href="#about">Human</a><a href="#lab">Signals</a>
-      </nav>
-      <a className="nav-contact" href={`mailto:${profile.publicEmail}`}>Let's connect <ArrowUpRight size={15} aria-hidden="true" /></a>
+      <button
+        className="menu-trigger"
+        onClick={() => menu.current?.showModal()}
+        aria-haspopup="dialog"
+      >
+        Index <Menu size={15} aria-hidden="true" />
+      </button>
+      <dialog ref={menu} className="index" aria-label="Site index">
+        <button
+          className="close"
+          aria-label="Close index"
+          onClick={() => menu.current?.close()}
+        >
+          <X />
+        </button>
+        <nav>
+          {[
+            ["work", "Selected work"],
+            ["about", "About"],
+            ["lab", "Experiments"],
+            ["contact", "Contact"],
+          ].map(([id, name]) => (
+            <a key={id} href={`#${id}`} onClick={() => menu.current?.close()}>
+              {name}
+            </a>
+          ))}
+        </nav>
+      </dialog>
     </header>
   );
 }

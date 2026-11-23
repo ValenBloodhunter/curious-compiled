@@ -3,7 +3,7 @@ import SectionHeading from "./SectionHeading";
 export default function About() {
   return (
     <section id="about" aria-label="About me" className="page-shell section about-section">
-      <SectionHeading title="A mind in motion." />
+      <SectionHeading title="About Debashis." />
       <div className="about-grid">
         <p className="about-statement">Behind the systems,<br />a very human<br /><em>kind of curious.</em></p>
         <div className="about-copy">

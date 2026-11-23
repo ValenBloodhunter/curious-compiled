@@ -9,11 +9,10 @@ const explorations = [
 export default function Explorations() {
   return (
     <section id="lab" aria-label="Current explorations" className="page-shell section">
-      <SectionHeading title="Incoming signals." description="Open questions. Unfinished experiments. Places my curiosity keeps returning to." />
+      <SectionHeading title="Experiments." />
       <div className="exploration-list">{explorations.map(item => (
         <article className="exploration" key={item.title}><span className="exploration-tag">{item.tag}</span><h3>{item.title}</h3><p>{item.description}</p></article>
       ))}</div>
-      <p className="lab-note"><span className="status-dot" /> In progress by nature. There is always another question.</p>
     </section>
   );
 }

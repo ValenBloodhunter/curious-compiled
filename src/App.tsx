@@ -17,7 +17,7 @@ export default function App() {
       <main id="main-content">
         <Hero />
         <section id="work" aria-label="Selected work" className="page-shell section">
-          <SectionHeading title="Thought, made tangible." description="A selection of systems built to solve something real. Explore the source, follow the thinking." />
+          <SectionHeading title="Selected work." />
           <div>
             {projects.map((project) => <ProjectRow key={project.id} project={project} />)}
           </div>
