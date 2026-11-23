@@ -1,5 +1,5 @@
 import { profile } from "../data/profile";
-import AsciiBlackHole from "./AsciiBlackHole";
+import AsciiPortrait from "./AsciiPortrait";
 
 export default function Hero() {
   return (
@@ -16,7 +16,7 @@ export default function Hero() {
           <a className="text-link" href={profile.githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </div>
-      <AsciiBlackHole />
+      <AsciiPortrait />
     </section>
   );
 }

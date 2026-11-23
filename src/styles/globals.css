@@ -35,7 +35,11 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .hero-intro { margin: 0 0 28px; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12px; color: var(--color-muted); }
 .hero h1 { margin: 0; font-family: var(--font-display); font-size: clamp(3.5rem, 6vw, 5rem); font-weight: 400; line-height: 1.08; letter-spacing: -.065em; }
 .hero-art { min-width: 0; margin: 0; text-align: center; }
-.hero-art pre { display: inline-block; margin: 0; color: #b4afc6; font-family: ui-monospace, "Cascadia Code", "Courier New", monospace; font-size: clamp(9px, 1.05vw, 12px); font-weight: 400; line-height: 1.2; letter-spacing: 0; text-align: left; user-select: none; }
+.portrait-frame { position: relative; width: 100%; max-width: 400px; aspect-ratio: 640 / 840; margin-inline: auto; overflow: hidden; mask-image: radial-gradient(ellipse 67% 64% at 50% 48%, #000 38%, transparent 88%); }
+.portrait-frame img, .portrait-frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.portrait-frame img { opacity: .45; }
+.portrait-frame canvas { filter: saturate(1.35); }
+.portrait-art figcaption { color: #a3bacc; }
 .hero-art figcaption { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 20px; margin-top: 20px; font-family: ui-monospace, "Cascadia Code", monospace; font-size: 12px; color: var(--color-muted); }
 .hero-art button { min-height: 44px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: #64646d; text-underline-offset: 4px; transition: color 180ms ease; }
 .hero-art button:hover { color: var(--color-accent); }
@@ -81,7 +85,6 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media (min-width: 1440px) { .hero { padding-block: 144px 152px; } }
 @media (max-width: 800px) {
   .hero { grid-template-columns: minmax(0, 1fr); gap: 64px; }
-  .hero-art pre { font-size: clamp(9px, 2vw, 12px); }
 }
 @media (max-width: 600px) {
   .site-nav { padding-block: 20px; gap: 12px; }
