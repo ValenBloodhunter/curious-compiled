@@ -1,6 +1,3 @@
-
-import { ArrowUpRight } from "lucide-react";
-
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import SectionHeading from "./components/SectionHeading";
@@ -9,67 +6,27 @@ import About from "./components/About";
 import Explorations from "./components/Explorations";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-
 import { projects } from "./data/projects";
+import { profile } from "./data/profile";
 
 export default function App() {
   return (
-    <div className="min-h-svh bg-bg text-ink">
-      {/* NAVIGATION */}
+    <div id="top">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-bg focus:p-4">Skip to content</a>
       <Navbar />
-
-      <main id="top">
-        {/* HERO */}
+      <main id="main-content">
         <Hero />
-
-        {/* SELECTED WORK */}
-        <section
-          id="work"
-          className="page-shell border-t border-line py-24 sm:py-32"
-        >
-          <SectionHeading
-            number="01"
-            label="SELECTED WORK"
-            title="Proof of curiosity."
-            description="A few things I've built, broken, fixed, and learned from."
-          />
-
-          <div className="mt-16 sm:mt-24">
-            {projects.map((project, index) => (
-              <ProjectRow
-                key={project.id}
-                project={project}
-                index={index}
-              />
-            ))}
+        <section id="work" aria-label="Selected work" className="page-shell section">
+          <SectionHeading title="Selected work" description="A few things I've built, tested, and learned from." />
+          <div>
+            {projects.map((project) => <ProjectRow key={project.id} project={project} />)}
           </div>
-
-          <a
-            href="https://github.com/ValenBloodhunter?tab=repositories"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group mt-12 inline-flex min-h-11 items-center gap-3 font-mono text-xs tracking-widest text-muted transition-colors hover:text-accent"
-          >
-            MORE EXPERIMENTS ON GITHUB
-
-            <ArrowUpRight
-              size={16}
-              className="transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"
-            />
-          </a>
+          <a href={`${profile.githubUrl}?tab=repositories`} target="_blank" rel="noopener noreferrer" className="text-link more-work">More on GitHub</a>
         </section>
-
-        {/* ABOUT */}
         <About />
-
-        {/* CURRENT EXPLORATIONS */}
         <Explorations />
-
-        {/* CONTACT */}
         <Contact />
       </main>
-
-      {/* FOOTER */}
       <Footer />
     </div>
   );
