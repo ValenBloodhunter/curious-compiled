@@ -16,7 +16,9 @@ Mode: Experience. Recruiters and collaborators encounter the work through an atm
 
 ## Motion and access
 
-The portrait responds subtly to mouse position. A bounded canvas of 90 neural particles drifts around it. Drawing stops offscreen and when the tab is hidden. Reduced motion uses a still field and no pointer displacement. No repeated section reveals or autoplay sound. Content and links remain visible independently of the canvas.
+Motion reference: https://youtube.com/shorts/sYGsqFtojDc — a central transforming form carries a scroll sequence while typography changes around it.
+
+The character is sampled directly from the existing image into a WebGL point cloud (300 by 400 sampling grid, near-black pixels omitted). A 270svh native scroll chapter pins the stage while the face turns, unfolds into an emerald neural bloom, and disperses toward the work. Scrolling backward reconstructs the portrait. The original headlines move aside for the second chapter; a bottom track communicates scroll progress. Subtle idle and pointer depth keep the form alive at rest. No scrolling is intercepted. Drawing stops offscreen and when the tab is hidden. Reduced motion and unavailable WebGL use the original still image with no extended pinned scroll. Context loss returns to that fallback. No new runtime dependency or replacement image is required.
 
 ## Responsive behavior
 

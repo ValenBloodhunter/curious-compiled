@@ -25,18 +25,33 @@ a, button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
 .nav-links a:hover, .text-link:hover { color: var(--color-accent); }
 .nav-contact { display: flex; gap: 20px; align-items: center; padding: 12px 17px; border: 1px solid #485044; border-radius: 30px; font-size: 12px; }
 .nav-contact:hover { background: var(--color-accent); color: #10170c; border-color: var(--color-accent); }
-.hero { position: relative; min-height: 720px; height: calc(100svh - 102px); max-height: 1100px; isolation: isolate; overflow: clip; }
+.hero-scroll { height: 270svh; }
+.hero { position: sticky; top: 0; min-height: 640px; height: 100svh; isolation: isolate; overflow: clip; --intro-opacity: 1; --chapter-opacity: 0; --title-shift: 0px; --story-progress: 0; }
 .hero-layout { height: 100%; position: relative; pointer-events: none; }
 .hero-layout a { pointer-events: auto; }
 .hero h1, .hero-counterpart { position: absolute; z-index: 2; font-size: clamp(4.5rem, 7vw, 7rem); font-weight: 400; line-height: 1.02; letter-spacing: -.04em; margin: 0; }
-.hero h1 { left: 3%; top: 8%; }
+.hero h1 { left: 3%; top: 8%; transform: translateX(calc(-1 * var(--title-shift))); }
+.hero h1, .hero-counterpart, .hero-description { opacity: var(--intro-opacity); }
 .hero h1 span, .hero-counterpart span { color: #e0e7da; }
-.hero-counterpart { text-align: right; right: 2%; bottom: 22%; }
+.hero-counterpart { text-align: right; right: 2%; bottom: 22%; transform: translateX(var(--title-shift)); }
 .hero-description { position: absolute; z-index: 2; left: 3%; bottom: 23%; width: 245px; margin: 0; color: #b5bdb2; font-size: 12px; line-height: 1.85; }
 .neural-scene { position: absolute; inset: -40px 0 0; overflow: hidden; }
 .neural-portrait { position: absolute; height: 96%; width: auto; max-width: none; left: 50%; bottom: 0; transform: translate(calc(-50% + var(--portrait-x, 0px)), var(--portrait-y, 0px)); object-fit: contain; }
 .neural-scene::after { content: ""; position: absolute; pointer-events: none; inset: 65% 0 0; background: linear-gradient(transparent, #000 90%); }
 .neural-scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.neural-scene canvas { opacity: 0; }
+.neural-scene[data-ready="true"] canvas { opacity: 1; }
+.neural-scene[data-ready="true"] .neural-portrait { opacity: 0; }
+.hero-chapter { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; opacity: var(--chapter-opacity); }
+.hero-chapter h2 { margin: 0; font-size: clamp(3rem, 6.5vw, 6rem); line-height: 1.12; font-weight: 400; letter-spacing: -.04em; text-shadow: 0 3px 28px #000; }
+.hero-chapter h2 span { color: var(--color-accent); }
+.hero-chapter p { font-size: 13px; line-height: 1.9; color: #c4d0bd; margin: 26px 0 0; text-shadow: 0 2px 12px #000; }
+.story-track { position: absolute; bottom: 0; height: 2px; background: #172014; left: 0; right: 0; }
+.story-track span { display: block; height: 100%; background: var(--color-accent); transform-origin: left; transform: scaleX(var(--story-progress)); }
+.hero-scroll[data-visual="static"] { height: auto; }
+.hero-scroll[data-visual="static"] .hero { position: relative; }
+.hero-scroll[data-visual="static"] .hero h1, .hero-scroll[data-visual="static"] .hero-counterpart, .hero-scroll[data-visual="static"] .hero-description { opacity: 1; transform: none; }
+.hero-scroll[data-visual="static"] .hero-chapter, .hero-scroll[data-visual="static"] .story-track, .hero-scroll[data-visual="static"] .portrait-caption, .hero-scroll[data-visual="static"] .hero-status { display: none; }
 .portrait-caption { position: absolute; z-index: 1; left: 50%; bottom: 15%; transform: translateX(-50%); font: 8px "DM Mono", monospace; letter-spacing: .12em; color: #8c9e89; white-space: nowrap; }
 .hero-bottom { position: absolute; z-index: 3; left: 0; right: 0; bottom: 28px; display: flex; justify-content: space-between; align-items: center; gap: 20px; border-top: 1px solid #273022; padding-top: 24px; font-size: 11px; }
 .hero-enter, .hero-credit { display: inline-flex; align-items: center; gap: 26px; min-height: 44px; }
@@ -115,7 +130,7 @@ a, button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
   .site-nav { height: 90px; }
   .nav-links { gap: 24px; }
   .nav-contact { gap: 10px; padding: 10px 12px; }
-  .hero { height: 820px; min-height: 0; }
+  .hero { height: 100svh; min-height: 680px; }
   .hero h1, .hero-counterpart { font-size: 4rem; }
   .hero h1 { top: 1%; }
   .hero-counterpart { bottom: 26%; font-size: 3.4rem; }
@@ -145,7 +160,7 @@ a, button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
   .brand-symbol { font-size: 25px; }
   .nav-links { gap: 17px; font-size: 11px; }
   .nav-contact { display: none; }
-  .hero { height: 800px; }
+  .hero { height: 100svh; min-height: 680px; }
   .hero h1 { font-size: 3.7rem; top: 18px; }
   .hero-counterpart { font-size: 3.2rem; bottom: 22%; }
   .hero-description { bottom: 11%; font-size: 10px; width: 220px; }
@@ -185,6 +200,12 @@ a, button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
   .footer nav { gap: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .hero-scroll { height: auto; }
+  .hero { position: relative; }
+  .hero-chapter, .story-track, .portrait-caption, .hero-status { display: none; }
+  .neural-scene[data-ready="true"] canvas { opacity: 0; }
+  .neural-scene[data-ready="true"] .neural-portrait { opacity: 1; }
+  .hero h1, .hero-counterpart, .hero-description { opacity: 1; transform: none; }
   .neural-portrait { transform: translateX(-50%); }
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
