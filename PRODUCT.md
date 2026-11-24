@@ -11,7 +11,7 @@ Personal portfolio of Debashis Das, a B.Tech student at SRM University AP. Inten
 
 ## Current brief
 
-The user requested a redesign inspired by https://resn.co.nz/. A single interactive sculpture opens into original artwork. Visitors can also go directly to the projects or use the site index.
+The portfolio follows Ghost Lynx, an original cyberpunk animal, from an interactive close-up to a wide alpine landscape. Flowing motion connects the portrait, vision controls, and project diagrams. Visitors can jump directly to the work, biography, field notes, and contact sections.
 
 ## Implementation
 

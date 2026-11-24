@@ -1,15 +1,28 @@
+import { ArrowUp } from "lucide-react";
 import { profile } from "../data/profile";
 
 export default function Footer() {
   return (
-    <footer className="page-shell footer">
-      <p>&copy; {new Date().getFullYear()} {profile.displayName.trim() || profile.tagline}</p>
+    <footer className="shell footer">
+      <p>
+        © {new Date().getFullYear()} {profile.displayName}
+      </p>
       <nav aria-label="Footer navigation">
-        <a className="text-link" href={profile.githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer">
+          GitHub
+        </a>
         {profile.linkedinUrl.trim() && (
-          <a className="text-link" href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a
+            href={profile.linkedinUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            LinkedIn
+          </a>
         )}
-        <a className="text-link" href="#top">Back to top</a>
+        <a href="#top">
+          Back to top <ArrowUp size={14} />
+        </a>
       </nav>
     </footer>
   );

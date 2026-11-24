@@ -1,6 +1,6 @@
+import { ArrowUpRight } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import SectionHeading from "./components/SectionHeading";
 import ProjectRow from "./components/ProjectRow";
 import About from "./components/About";
 import Explorations from "./components/Explorations";
@@ -12,16 +12,33 @@ import { profile } from "./data/profile";
 export default function App() {
   return (
     <div id="top">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-bg focus:p-4">Skip to content</a>
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <Navbar />
       <main id="main-content">
         <Hero />
-        <section id="work" aria-label="Selected work" className="page-shell section">
-          <SectionHeading title="Selected work." />
-          <div>
-            {projects.map((project) => <ProjectRow key={project.id} project={project} />)}
+        <section
+          id="work"
+          aria-labelledby="work-heading"
+          className="shell work"
+        >
+          <div className="section-heading">
+            <h2 id="work-heading">
+              Selected <em>work.</em>
+            </h2>
+            <a
+              href={`${profile.githubUrl}?tab=repositories`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-link"
+            >
+              All repositories <ArrowUpRight size={16} />
+            </a>
           </div>
-          <a href={`${profile.githubUrl}?tab=repositories`} target="_blank" rel="noopener noreferrer" className="text-link more-work">More on GitHub</a>
+          {projects.map((project, i) => (
+            <ProjectRow key={project.id} project={project} first={i === 0} />
+          ))}
         </section>
         <About />
         <Explorations />
