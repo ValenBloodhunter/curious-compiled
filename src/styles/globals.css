@@ -184,6 +184,7 @@ body:has(.index[open]) {
 }
 
 .stage {
+  touch-action: pan-y pinch-zoom;
   position: relative;
   isolation: isolate;
   display: flex;
@@ -304,6 +305,11 @@ body:has(.index[open]) {
 }
 .scene-name svg {
   color: var(--signal);
+}
+.gesture-hint {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 .lens-control {
   border: 1px solid #adc1cb40;
@@ -614,6 +620,9 @@ body:has(.index[open]) {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .gesture-hint {
+    display: block;
+  }
   .project-row[open] .trace {
     animation: connect 1.2s cubic-bezier(0.18, 0.68, 0.31, 1) both;
   }
@@ -626,13 +635,19 @@ body:has(.index[open]) {
     }
   }
   @supports (animation-timeline: view()) {
+    .project-diagram {
+      view-timeline-name: --diagram;
+    }
     .project-row[open] .trace {
-      animation-timeline: view();
+      animation-timeline: --diagram;
       animation-range: entry 0% cover 40%;
+    }
+    .valley {
+      view-timeline-name: --landscape;
     }
     .valley img {
       animation: traverse linear both;
-      animation-timeline: view();
+      animation-timeline: --landscape;
     }
     @keyframes traverse {
       from {

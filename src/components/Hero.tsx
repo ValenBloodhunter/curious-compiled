@@ -28,7 +28,9 @@ export default function Hero() {
       <div className="scene-console">
         <div className="scene-name">
           <ScanEye size={19} aria-hidden="true" />
-          <span>Ghost Lynx</span>
+          <span>
+            Ghost Lynx<small className="gesture-hint">Drag the portrait</small>
+          </span>
         </div>
         <div className="lens-control" role="group" aria-label="Lynx vision">
           <Aperture size={15} aria-hidden="true" />

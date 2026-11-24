@@ -21,8 +21,11 @@ with sync_playwright() as p:
     expect(thermal).to_have_attribute("aria-pressed", "true")
     page.get_by_role("button", name="Optical").click()
     expect(thermal).to_have_attribute("aria-pressed", "false")
+    trace = page.locator("details[open] .trace")
+    expect(trace).to_have_css("stroke-dasharray", "0px, 100px")
     page.get_by_role("link", name="Explore my work").click()
     expect(page).to_have_url(f"{base}/#work")
+    page.wait_for_function("parseFloat(getComputedStyle(document.querySelector('details[open] .trace')).strokeDasharray) > 50")
     projects = page.locator(".project-row")
     expect(projects).to_have_count(4)
     for project in projects.all():
@@ -44,6 +47,27 @@ with sync_playwright() as p:
     mobile = browser.new_page(viewport={"width": 390, "height": 844}, has_touch=True, reduced_motion="reduce")
     mobile.on("pageerror", lambda error: errors.append(str(error)))
     mobile.goto(base)
+    mobile.emulate_media(reduced_motion="no-preference")
+    expect(mobile.locator(".scene canvas")).to_have_attribute("data-ready", "true")
+    device = mobile.context.new_cdp_session(mobile)
+    device.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 70, "y": 220}]})
+    device.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": 310, "y": 220}]})
+    # Check the pose sent to the active shader. A running idle loop also changes pixels.
+    gaze_x = """() => {
+        const gl = document.querySelector('.scene canvas').getContext('webgl2');
+        const program = gl.getParameter(gl.CURRENT_PROGRAM);
+        return gl.getUniform(program, gl.getUniformLocation(program, 'gaze'))[0];
+    }"""
+    mobile.wait_for_function(f"({gaze_x})() > 0.25")
+    device.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+    mobile.wait_for_function(f"Math.abs(({gaze_x})()) < 0.03")
+    device.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 200, "y": 420}]})
+    for y in (390, 350, 300, 240):
+        device.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": 200, "y": y}]})
+    device.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+    mobile.wait_for_function("window.scrollY > 0")
+    mobile.emulate_media(reduced_motion="reduce")
+    mobile.evaluate("scrollTo({top: 0, behavior: 'instant'})")
     mobile.get_by_role("button", name="Thermal").tap()
     expect(mobile.locator(".scene canvas")).to_be_hidden()
     expect(mobile.locator(".scene-poster")).to_have_css("filter", 'url("#thermal-map")')
@@ -72,6 +96,9 @@ with sync_playwright() as p:
     expect(fallback.locator(".scene-poster")).to_be_visible()
     expect(fallback.locator(".scene-poster")).to_have_css("filter", 'url("#thermal-map")')
     expect(fallback.locator(".scene canvas")).not_to_have_attribute("data-ready", "true")
+    fallback.wait_for_function("document.querySelector('.scene-poster').style.transform.includes('translate3d')")
+    fallback.emulate_media(reduced_motion="reduce")
+    expect(fallback.locator(".scene-poster")).to_have_css("transform", "none")
     expect(fallback.get_by_role("link", name="Explore my work")).to_be_visible()
     assert not errors, errors
     browser.close()
