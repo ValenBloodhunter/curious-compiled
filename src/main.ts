@@ -15,7 +15,7 @@ function start(canvas: HTMLCanvasElement, container: HTMLElement) {
   const scene = context?.getExtension('EXT_color_buffer_float')
     ? new SceneManager(canvas, context)
     : undefined
-  const gargantua = scene && new Gargantua()
+  const gargantua = scene && new Gargantua(scene.camera)
   if (gargantua) scene?.scene.add(gargantua.mesh)
 
   const scroll = createScroll(container)
@@ -44,7 +44,7 @@ function start(canvas: HTMLCanvasElement, container: HTMLElement) {
     choreography.update(next)
     gargantua?.update(next)
     motionUI.update(next)
-    scene?.render(delta)
+    if (gargantua) scene?.render(next, gargantua.diskTilt, gargantua.warpVelocity)
     frameId = requestAnimationFrame(frame)
   }
 

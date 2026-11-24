@@ -14,11 +14,28 @@ with sync_playwright() as p:
         viewport={"width": 480, "height": 400}, device_scale_factor=2, reduced_motion="reduce"
     )
     desktop.on("pageerror", lambda error: errors.append(str(error)))
+    desktop.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
     desktop.goto(base, wait_until="networkidle")
     canvas = desktop.locator("#webgl")
     expect(canvas).to_have_attribute("width", "840")
     expect(canvas).to_have_attribute("height", "700")
     assert canvas.evaluate("el => el.getContext('webgl2').getError()") == 0
+    shadow, ring, lower_disk = canvas.evaluate("""canvas => new Promise(resolve => {
+        requestAnimationFrame(() => {
+            const gl = canvas.getContext('webgl2')
+            const { width, height } = canvas
+            const strip = new Uint8Array(height * 4)
+            gl.readPixels(width >> 1, 0, 1, height, gl.RGBA, gl.UNSIGNED_BYTE, strip)
+            const red = y => strip[Math.floor(height * y) * 4]
+            const peak = (from, to) => {
+                let value = 0
+                for (let y = from; y < to; y += 1 / height) value = Math.max(value, red(y))
+                return value
+            }
+            resolve([red(0.56), peak(0.64, 0.70), peak(0.20, 0.28)])
+        })
+    })""")
+    assert shadow < 70 and ring > 170 and lower_disk > shadow + 10, (shadow, ring, lower_disk)
     expect(desktop.get_by_role("heading", name="Event Horizon")).to_have_count(1)
 
     tracks = desktop.locator("#scroll-container > section")
