@@ -9,14 +9,14 @@ uniform float uColorTemp;
 uniform float uDissolve;
 uniform float uRingPulse;
 uniform float uDiskEmission;
+uniform vec2 uResolution;
+uniform highp sampler3D uNoise;
 
 varying vec2 vScreen;
 
 // Units set the critical impact parameter to one: b_crit = sqrt(27) M.
 const float MASS = 0.19245009;
 const float PI = 3.14159265;
-const float DISK_INNER = 1.18;
-const float DISK_OUTER = 4.75;
 const vec3 VOID = vec3(0.00091, 0.00091, 0.00152);
 const vec3 WHITE_GOLD = vec3(1.0, 0.905, 0.715);
 const vec3 GOLD = vec3(0.807, 0.328, 0.072);
@@ -30,35 +30,42 @@ float hash(vec3 p) {
 }
 
 float noise(vec3 p) {
-  vec3 cell = floor(p);
-  vec3 t = fract(p);
-  t *= t * (3.0 - 2.0 * t);
-  vec4 a = vec4(hash(cell), hash(cell + vec3(1, 0, 0)),
-                hash(cell + vec3(0, 1, 0)), hash(cell + vec3(1, 1, 0)));
-  cell.z += 1.0;
-  vec4 b = vec4(hash(cell), hash(cell + vec3(1, 0, 0)),
-                hash(cell + vec3(0, 1, 0)), hash(cell + vec3(1, 1, 0)));
-  vec4 layer = mix(a, b, t.z);
-  return mix(mix(layer.x, layer.y, t.x), mix(layer.z, layer.w, t.x), t.y);
+  return texture(uNoise, p / 32.0).r;
 }
 
-vec4 disk(float radius, vec3 radial, vec3 normal, vec3 toCamera) {
+float filaments(float radius, float azimuth, float omega, float age, float epoch) {
+  float phase = azimuth - omega * age;
+  float warp = clamp(uScrollVelocity, -30.0, 30.0) * 0.028 * sin(3.0 * azimuth);
+  vec3 p = vec3(radius * 29.0 + warp, 2.7 * cos(phase), 2.7 * sin(phase));
+  p += vec3(0.0, epoch * 7.13, epoch * 5.83);
+  p.x += (noise(p * 0.32) - 0.5) * 5.0;
+  return 0.43 * noise(p) + 0.25 * noise(p * 2.03)
+       + 0.16 * noise(p * 4.09) + 0.10 * noise(p * 8.21) + 0.06 * noise(p * 16.47);
+}
+
+vec4 disk(vec3 point, vec3 normal, vec3 toCamera) {
+  float radius = length(point);
   if (radius < DISK_INNER || radius > DISK_OUTER) return vec4(0.0);
 
-  vec3 tangent = cross(normal, radial);
+  vec3 radial = point / radius;
+  vec3 tangent = normalize(cross(normal, radial));
   float orbitalSpeed = sqrt(MASS / (radius - 2.0 * MASS));
   float approaching = dot(tangent, toCamera);
   float doppler = sqrt(1.0 - orbitalSpeed * orbitalSpeed) / (1.0 - orbitalSpeed * approaching);
   float azimuth = atan(dot(radial, cross(normal, vec3(1, 0, 0))), radial.x);
-  float phase = azimuth - uTime * 0.43 / (radius * sqrt(radius));
-  vec3 p = vec3(radius * 19.0, cos(phase) * 2.5, sin(phase) * 2.5);
-  p.x += clamp(uScrollVelocity, -30.0, 30.0) * 0.035 * sin(azimuth * 3.0);
-  float eddies = noise(p * 0.36);
-  p.x += eddies * 3.0;
-  float fbm = noise(p) * 0.56 + noise(p * 2.03) * 0.29 + noise(p * 4.11) * 0.15;
+  float omega = DISK_ROTATION / (radius * sqrt(radius));
+  float epoch = floor(uTime / 7.0);
+  float phase = fract(uTime / 7.0);
+  float fbm = mix(
+    filaments(radius, azimuth, omega, (phase + 1.0) * 7.0, epoch - 1.0),
+    filaments(radius, azimuth, omega, phase * 7.0, epoch),
+    smoothstep(0.0, 1.0, phase)
+  );
   float filament = pow(clamp(fbm * 1.18, 0.0, 1.0), 3.0);
   float inner = smoothstep(DISK_INNER, DISK_INNER + 0.13, radius);
-  float outer = 1.0 - smoothstep(3.45, DISK_OUTER, radius + (eddies - 0.5) * 0.55);
+  float outer = 1.0 - smoothstep(3.45, DISK_OUTER, radius + (fbm - 0.5) * 0.35);
+  float radialDelay = 0.06875 + 0.4125 * (DISK_OUTER - radius) / (DISK_OUTER - DISK_INNER);
+  outer *= 1.0 - smoothstep(radialDelay, radialDelay + 0.45, uDissolve / 0.65);
   float heat = exp(-0.68 * (radius - DISK_INNER));
   float hotSide = clamp(0.20 + 0.68 * approaching + uColorTemp, 0.0, 1.0);
   vec3 color = mix(EMBER, mix(AMBER, GOLD, hotSide), heat);
@@ -87,6 +94,8 @@ void main() {
   float sine = length(transverse);
   float impact = sine / (invRadius * sqrt(1.0 - 2.0 * MASS * invRadius));
   float pixel = max(fwidth(impact), 0.0001);
+  vec2 pixelIndex = floor((vScreen * 0.5 + 0.5) * uResolution);
+  float jitter = fract(52.9829189 * fract(dot(pixelIndex, vec2(0.06711056, 0.00583715))));
   vec3 skyRay = ray;
   vec3 light = vec3(0.0);
   float transmission = 1.0;
@@ -105,18 +114,27 @@ void main() {
 
     for (int step = 0; step < 88; step++) {
       // Inverse radius along a Schwarzschild null geodesic: u'' = -u + 3 M u².
-      float h = mix(0.22, 0.046, smoothstep(0.30, 1.55, u));
+      float h = mix(0.19, 0.040, smoothstep(0.30, 1.55, u));
+      if (step == 0) h *= 0.5 + jitter * 0.5;
       float midU = u + 0.5 * h * du;
       float midDu = du + 0.5 * h * u * (3.0 * MASS * u - 1.0);
       float nextU = u + h * midDu;
       if (angle + h >= plane) {
-        float hitU = mix(u, nextU, (plane - angle) / h);
-        if (hitU > 0.0) {
-          vec3 hit = radial * cos(plane) + tangent * sin(plane);
-          vec4 sampleColor = disk(1.0 / hitU, hit, normal, radial);
-          sampleColor.a *= uDiskEmission;
-          light += transmission * sampleColor.rgb * sampleColor.a;
-          transmission *= 1.0 - sampleColor.a;
+        float endAngle = angle + h;
+        if (nextU <= 0.0) endAngle = mix(angle, endAngle, (u - 0.0001) / (u - nextU));
+        if (endAngle >= plane) {
+          vec3 prevP = (radial * cos(angle) + tangent * sin(angle)) / u;
+          vec3 p = (radial * cos(endAngle) + tangent * sin(endAngle)) / max(nextU, 0.0001);
+          float prevHeight = dot(prevP, normal);
+          float height = dot(p, normal);
+          float span = abs(prevHeight) + abs(height);
+          if (prevHeight * height <= 0.0 && span > 0.000001) {
+            vec3 hitPos = mix(prevP, p, abs(prevHeight) / span);
+            vec4 sampleColor = disk(hitPos, normal, normalize(uCameraPos - hitPos));
+            sampleColor.a *= uDiskEmission;
+            light += transmission * sampleColor.rgb * sampleColor.a;
+            transmission *= 1.0 - sampleColor.a;
+          }
         }
         plane += PI;
       }
@@ -135,15 +153,19 @@ void main() {
     skyRay = normalize(ray - towardCenter * (4.0 * MASS / impact));
   }
 
-  float ringWidth = 0.010 + 0.5 * pixel;
-  float edge = (impact - 1.009) / ringWidth;
+  float ringWidth = sqrt(0.004 * 0.004 + 0.28 * pixel * pixel);
+  float edge = (impact - 1.004) / ringWidth;
   float ring = exp(-edge * edge) * smoothstep(1.0 - pixel, 1.0 + pixel, impact);
-  float beaming = 0.67 + 0.33 * smoothstep(-0.85, 0.75, -vScreen.x / max(uZoom.y, 0.05));
-  light += transmission * WHITE_GOLD * ring * beaming * (2.0 + 0.55 * uRingPulse);
-  light *= 1.0 - uDissolve;
+  vec3 ringRadial = transverse - normal * dot(transverse, normal);
+  vec3 velDir = normalize(cross(normal, ringRadial) + vec3(0.00001, 0, 0));
+  float beaming = pow(1.0 + 0.55 * dot(velDir, -ray), 2.5);
+  float ringErosion = smoothstep(0.73, 1.0, uDissolve);
+  light += transmission * WHITE_GOLD * ring * beaming * (1.6 + 0.45 * uRingPulse) * (1.0 - ringErosion);
   float sky = captured ? 0.0 : stars(skyRay) * transmission;
-  if (uDissolve > 0.0) sky = mix(sky, stars(ray), uDissolve);
+  if (ringErosion > 0.0) sky = mix(sky, stars(ray), ringErosion);
   light += vec3(0.78, 0.78, 0.83) * sky;
 
-  gl_FragColor = vec4(VOID + light, 1.0);
+  float shadow = 1.0 - smoothstep(1.0 - pixel * 1.5, 1.0, impact);
+  float visibility = 1.0 - shadow * transmission * (1.0 - ringErosion);
+  gl_FragColor = vec4(VOID + light, visibility);
 }

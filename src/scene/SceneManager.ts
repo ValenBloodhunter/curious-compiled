@@ -10,14 +10,10 @@ import { ParticleField } from './ParticleField'
 export class SceneManager {
   readonly scene = new THREE.Scene()
   readonly camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100)
+  readonly drawingBufferSize = new THREE.Vector2()
   private readonly particles = new ParticleField()
   private readonly renderer: THREE.WebGLRenderer
   private readonly composer: EffectComposer
-  private maxRenderRatio = 1
-  private quality = 1
-  private frameTime = 1 / 60
-  private nextQualityCheck = 1
-  private nextQualityIncrease = 5
   private readonly bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.45, 0.28, 0.78)
   private readonly finish = new ShaderPass(new THREE.ShaderMaterial({
     uniforms: { tDiffuse: { value: null }, time: { value: 0 }, aberration: { value: 0 } },
@@ -35,7 +31,8 @@ export class SceneManager {
       varying vec2 vUv;
 
       void main() {
-        vec3 color = texture2D(tDiffuse, vUv).rgb;
+        vec4 scene = texture2D(tDiffuse, vUv);
+        vec3 color = scene.rgb;
         if (aberration > 0.0) {
           vec2 offset = (vUv - 0.5) * aberration;
           color.r = texture2D(tDiffuse, vUv + offset).r;
@@ -43,7 +40,9 @@ export class SceneManager {
         }
         float grain = fract(52.9829189 * fract(dot(gl_FragCoord.xy + floor(time * 24.0),
           vec2(0.06711056, 0.00583715)))) - 0.5;
-        gl_FragColor = vec4(color * (1.0 + 0.03 * grain), 1.0);
+        const vec3 obsidian = vec3(0.00091, 0.00091, 0.00152);
+        vec3 mapped = 1.0 - exp(-1.25 * max(vec3(0.0), color - obsidian));
+        gl_FragColor = vec4(obsidian + mapped * clamp(scene.a, 0.0, 1.0) * (1.0 + 0.03 * grain), 1.0);
       }
     `,
   }))
@@ -52,6 +51,11 @@ export class SceneManager {
   constructor(canvas: HTMLCanvasElement, context: WebGL2RenderingContext) {
     this.renderer = new THREE.WebGLRenderer({ canvas, context })
     this.renderer.setClearColor(0x030305)
+    this.bloom.blendMaterial.blending = THREE.CustomBlending
+    this.bloom.blendMaterial.blendSrc = THREE.OneFactor
+    this.bloom.blendMaterial.blendDst = THREE.OneFactor
+    this.bloom.blendMaterial.blendSrcAlpha = THREE.ZeroFactor
+    this.bloom.blendMaterial.blendDstAlpha = THREE.OneFactor
     this.scene.add(this.particles.points)
     this.composer = new EffectComposer(
       this.renderer,
@@ -68,14 +72,14 @@ export class SceneManager {
 
   private resize = () => {
     const { innerWidth: width, innerHeight: height } = window
-    const pixelRatio = Math.min(window.devicePixelRatio, 1.75)
-    this.maxRenderRatio = Math.min(pixelRatio, Math.sqrt(1_400_000 / (width * height)))
     this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
-    this.renderer.setPixelRatio(pixelRatio)
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     this.renderer.setSize(width, height, false)
-    this.composer.setPixelRatio(this.maxRenderRatio * this.quality)
-    this.composer.setSize(width, height)
+    this.renderer.getDrawingBufferSize(this.drawingBufferSize)
+    // The composer receives integer device pixels, so it must not apply DPR again.
+    this.composer.setPixelRatio(1)
+    this.composer.setSize(this.drawingBufferSize.x, this.drawingBufferSize.y)
   }
 
   setBloomStrength(strength: number) {
@@ -87,26 +91,7 @@ export class SceneManager {
   }
 
   render(state: State, diskTilt: number, warpVelocity: number) {
-    if (!state.reducedMotion) {
-      this.frameTime += (state.delta - this.frameTime) * 0.06
-      if (state.time >= this.nextQualityCheck) {
-        this.nextQualityCheck = state.time + 1
-        let adjustment = 0
-        if (this.frameTime > 0.0175) {
-          adjustment = -0.12
-          this.nextQualityIncrease = state.time + 8
-        } else if (this.frameTime < 0.0169 && state.time >= this.nextQualityIncrease) {
-          adjustment = 0.04
-          this.nextQualityIncrease = state.time + 3
-        }
-        const quality = THREE.MathUtils.clamp(this.quality + adjustment, 0.42, 1)
-        if (quality !== this.quality) {
-          this.quality = quality
-          this.composer.setPixelRatio(this.maxRenderRatio * quality)
-        }
-      }
-    }
-    this.particles.update(state, diskTilt, warpVelocity, this.maxRenderRatio * this.quality)
+    this.particles.update(state, diskTilt, warpVelocity, this.renderer.getPixelRatio())
     this.finish.uniforms.time.value = state.reducedMotion ? 0 : state.time
     this.finish.uniforms.aberration.value = state.reducedMotion ? 0 : Math.abs(state.smoothedVelocity) * 0.000045
     this.composer.render(state.delta)

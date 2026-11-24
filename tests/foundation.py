@@ -17,8 +17,8 @@ with sync_playwright() as p:
     desktop.on("console", lambda message: errors.append(message.text) if message.type == "error" else None)
     desktop.goto(base, wait_until="networkidle")
     canvas = desktop.locator("#webgl")
-    expect(canvas).to_have_attribute("width", "840")
-    expect(canvas).to_have_attribute("height", "700")
+    expect(canvas).to_have_attribute("width", "960")
+    expect(canvas).to_have_attribute("height", "800")
     assert canvas.evaluate("el => el.getContext('webgl2').getError()") == 0
     shadow, ring, lower_disk = canvas.evaluate("""canvas => new Promise(resolve => {
         requestAnimationFrame(() => {
@@ -59,7 +59,7 @@ with sync_playwright() as p:
     desktop.wait_for_function("scrollY > 50 && scrollY < 140")
 
     desktop.set_viewport_size({"width": 400, "height": 360})
-    expect(canvas).to_have_attribute("width", "700")
+    expect(canvas).to_have_attribute("width", "800")
     assert tracks.last.evaluate(
         "el => el.offsetTop === document.documentElement.scrollHeight - innerHeight"
     )

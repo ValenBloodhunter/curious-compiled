@@ -4,22 +4,22 @@ import type { SceneManager } from './SceneManager'
 
 const hero = {
   azimuth: -5, elevation: 5, distance: 8.6, tilt: 14, zoom: 1,
-  x: -0.55, y: 0, bloom: 0.45, warp: 0.8, dissolve: 0,
+  x: -0.55, y: 0, bloom: 0.45, warp: 0.8,
   wave: 0, ring: 0, collapse: 0,
 }
 const about = {
   azimuth: 3, elevation: 0, distance: 8.6, tilt: 4, zoom: 0.91,
-  x: 0.52, y: 0.43, bloom: 0.37, warp: 1.0, dissolve: 0.65,
+  x: 0.52, y: 0.43, bloom: 0.37, warp: 1.0,
   wave: 1, ring: 0, collapse: 0,
 }
 const work = {
   azimuth: 10, elevation: 32, distance: 10.0, tilt: 7, zoom: 0.91,
-  x: -1.25, y: 0.08, bloom: 0.40, warp: 1.2, dissolve: 0.84,
+  x: -1.25, y: 0.08, bloom: 0.40, warp: 1.2,
   wave: 0, ring: 1, collapse: 0,
 }
 const contact = {
   azimuth: 0, elevation: 1, distance: 5.5, tilt: 0, zoom: 3,
-  x: 0, y: 0, bloom: 0.10, warp: 0.18, dissolve: 0,
+  x: 0, y: 0, bloom: 0.10, warp: 0.18,
   wave: 0, ring: 0, collapse: 1,
 }
 
@@ -98,7 +98,7 @@ export class Choreography {
     this.gargantua.setFovBreathing(this.fov)
     this.gargantua.setHoverIntensity(this.hover)
     this.gargantua.setWarpFactor(pose.warp)
-    this.gargantua.setDissolve(pose.dissolve)
+    this.gargantua.setDissolve(0.65 * pose.wave + 0.84 * pose.ring)
     this.gargantua.setDiskEmission(1 - 0.96 * pose.collapse)
     this.gargantua.setRingPulse(this.pulse)
     this.scene.setBloomStrength(pose.bloom + 0.085 * this.pulse)

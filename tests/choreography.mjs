@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { Choreography } from '../src/scene/Choreography.ts'
 
 function capture(aspect = 16 / 9) {
@@ -33,7 +34,9 @@ for (const [key, values] of Object.entries(start)) {
 }
 
 assert.deepEqual(capture()(0.36).setParticleMorph, [1, 0, 0])
+assert.deepEqual(capture()(0.36).setDissolve, [0.65])
 assert.deepEqual(capture()(0.65).setParticleMorph, [0, 1, 0])
+assert.deepEqual(capture()(0.65).setDissolve, [0.84])
 assert.deepEqual(capture()(0.89).setParticleMorph, [0, 0, 1])
 assert.equal(capture()(0.95).setRingPulse[0], 1)
 assert.deepEqual(capture()(0.89, { reducedMotion: true }), start)
@@ -49,3 +52,11 @@ landing(0.999)
 const wrapped = landing(0.001)
 assert.ok(Math.abs(wrapped.setCameraOrbit[2] - start.setCameraOrbit[2]) < 0.0001)
 console.log('Choreography seam, morphs, recoil, and input damping passed.')
+
+const shader = readFileSync(new URL('../src/scene/shaders/gargantua.frag.glsl', import.meta.url), 'utf8')
+const material = readFileSync(new URL('../src/scene/Gargantua.ts', import.meta.url), 'utf8')
+const uniforms = [...shader.matchAll(/^uniform\s+(?:highp\s+)?\w+\s+(u\w+);/gm)].map((match) => match[1])
+const bindings = [...material.matchAll(/^\s+(u\w+): \{ value:/gm)].map((match) => match[1])
+assert.deepEqual(uniforms.sort(), bindings.sort())
+assert.ok(bindings.includes('uResolution'))
+console.log(`All ${uniforms.length} Gargantua uniforms match.`)

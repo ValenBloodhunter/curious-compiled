@@ -1,6 +1,21 @@
 import * as THREE from 'three'
 import type { State } from '../core/state'
 import fragmentShader from './shaders/gargantua.frag.glsl?raw'
+import { diskDefines } from './diskGeometry'
+
+function makeNoiseTexture() {
+  const size = 32
+  const voxels = new Uint8Array(size ** 3)
+  const random = THREE.MathUtils.seededRandom
+  random(721)
+  for (let i = 0; i < voxels.length; i++) voxels[i] = Math.floor(random() * 256)
+  const texture = new THREE.Data3DTexture(voxels, size, size, size)
+  texture.format = THREE.RedFormat
+  texture.minFilter = texture.magFilter = THREE.LinearFilter
+  texture.wrapS = texture.wrapT = texture.wrapR = THREE.RepeatWrapping
+  texture.needsUpdate = true
+  return texture
+}
 
 export class Gargantua {
   private readonly target = new THREE.Vector3()
@@ -16,11 +31,14 @@ export class Gargantua {
     uDissolve: { value: 0 },
     uRingPulse: { value: 0 },
     uDiskEmission: { value: 1 },
+    uResolution: { value: new THREE.Vector2() },
+    uNoise: { value: makeNoiseTexture() },
   }
   readonly mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(2, 2),
     new THREE.ShaderMaterial({
       uniforms: this.uniforms,
+      defines: diskDefines,
       vertexShader: `
         varying vec2 vScreen;
         void main() {
@@ -42,8 +60,9 @@ export class Gargantua {
   private warp = 1
   private fovBreathing = 0
 
-  constructor(camera: THREE.PerspectiveCamera) {
+  constructor(camera: THREE.PerspectiveCamera, drawingBufferSize: THREE.Vector2) {
     this.camera = camera
+    this.uniforms.uResolution.value = drawingBufferSize
     this.mesh.frustumCulled = false
     this.mesh.renderOrder = -1
   }
@@ -128,5 +147,6 @@ export class Gargantua {
     this.mesh.removeFromParent()
     this.mesh.geometry.dispose()
     this.mesh.material.dispose()
+    this.uniforms.uNoise.value.dispose()
   }
 }

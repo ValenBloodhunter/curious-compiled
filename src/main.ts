@@ -15,7 +15,7 @@ function start(canvas: HTMLCanvasElement, container: HTMLElement) {
   const scene = context?.getExtension('EXT_color_buffer_float')
     ? new SceneManager(canvas, context)
     : undefined
-  const gargantua = scene && new Gargantua(scene.camera)
+  const gargantua = scene && new Gargantua(scene.camera, scene.drawingBufferSize)
   if (gargantua) scene?.scene.add(gargantua.mesh)
 
   const scroll = createScroll(container)
