@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "instrument serif",
+        "files": [
+          "src/styles/globals.css"
+        ],
+        "createdAt": "2026-11-24T00:33:13.576Z",
+        "reason": "Portfolio redesign choice documented in DESIGN.md: Instrument Serif italic pairs with DM Sans in the display headings."
+      }
+    ]
+  }
+}
