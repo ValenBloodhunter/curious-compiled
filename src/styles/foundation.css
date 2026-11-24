@@ -1,0 +1,48 @@
+@font-face {
+  font-family: "DM Sans";
+  src: url("/fonts/dm-sans.woff2") format("woff2");
+  font-display: swap;
+}
+
+html {
+  background: #080f16;
+  color: #edf4ff;
+  overscroll-behavior-y: none;
+  scrollbar-width: none;
+}
+
+body {
+  margin: 0;
+}
+
+#webgl {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#scroll-container {
+  position: relative;
+}
+
+.track {
+  box-sizing: border-box;
+  display: grid;
+  place-items: end center;
+  height: 100dvh;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.track-work {
+  height: 180dvh;
+  place-items: center;
+}
+
+.track h1,
+.track h2 {
+  margin: 0;
+  font: 500 clamp(1rem, 3vw, 1.75rem)/1.2 "DM Sans", system-ui, sans-serif;
+}

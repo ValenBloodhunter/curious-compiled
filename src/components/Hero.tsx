@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { ArrowDown, Aperture, ScanEye } from "lucide-react";
 import LynxScene from "./LynxScene";
+import { portfolio } from "../data/portfolio";
 
 export default function Hero() {
   const [thermal, setThermal] = useState(false);
+  const { title, intro } = portfolio.hero;
   return (
     <section
       className="stage"
@@ -14,13 +16,11 @@ export default function Hero() {
       <div className="stage-shade" aria-hidden="true" />
       <div className="hero-copy">
         <h1 id="intro-title">
-          Curious,
+          {title[0]}
           <br />
-          <em>Compiled.</em>
+          <em>{title[1]}</em>
         </h1>
-        <p>
-          I'm Debashis Das. I build software and explore how machines learn.
-        </p>
+        <p>{intro}</p>
         <a className="explore-button" href="#work">
           <ArrowDown size={17} /> Explore my work
         </a>

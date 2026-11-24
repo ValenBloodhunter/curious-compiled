@@ -1,6 +1,8 @@
 import landscape from "../assets/lynx-valley.webp";
+import { portfolio } from "../data/portfolio";
 
 export default function About() {
+  const { bio, recognition } = portfolio.about;
   return (
     <section id="about" aria-labelledby="about-heading" className="about">
       <div className="valley">
@@ -19,22 +21,13 @@ export default function About() {
           <em>Debashis.</em>
         </h2>
         <div className="bio-copy">
-          <p>
-            I’m a B.Tech student at SRM University AP. Competitive programming
-            taught me to look for the simplest idea that makes a hard problem
-            click.
-          </p>
-          <p>
-            I take that habit into machine learning, software, and hardware. I
-            like building something small enough to test, seeing where it
-            breaks, and trying again.
-          </p>
+          {bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <div className="recognition">
-            <strong>1st</strong>
+            <strong>{recognition.place}</strong>
             <span>
-              Codecraft Track
+              {recognition.track}
               <br />
-              <small>Codevium 2026 · SRM University AP</small>
+              <small>{recognition.event}</small>
             </span>
           </div>
         </div>

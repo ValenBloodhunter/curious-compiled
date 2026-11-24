@@ -1,8 +1,9 @@
 import { ArrowUpRight } from "lucide-react";
-import { profile } from "../data/profile";
+import { portfolio } from "../data/portfolio";
 
 export default function Contact() {
-  const email = profile.publicEmail.trim();
+  const email = portfolio.contact.email.trim();
+  const href = email ? `mailto:${email}` : portfolio.contact.github;
   return (
     <section
       id="contact"
@@ -10,7 +11,7 @@ export default function Contact() {
       className="shell contact"
     >
       <h2 id="contact-heading">
-        <a href={email ? `mailto:${email}` : profile.githubUrl}>
+        <a href={href}>
           Say <em>hello.</em>
           <ArrowUpRight aria-hidden="true" />
         </a>
@@ -18,7 +19,7 @@ export default function Contact() {
       <p>Have a project or a question in mind?</p>
       <a
         className="text-link"
-        href={email ? `mailto:${email}` : profile.githubUrl}
+        href={href}
       >
         {email || "Find me on GitHub"}
       </a>

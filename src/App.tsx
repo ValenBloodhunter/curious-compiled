@@ -6,7 +6,7 @@ import About from "./components/About";
 import Explorations from "./components/Explorations";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import { projects } from "./data/projects";
+import { portfolio } from "./data/portfolio";
 import { profile } from "./data/profile";
 
 export default function App() {
@@ -36,7 +36,7 @@ export default function App() {
               All repositories <ArrowUpRight size={16} />
             </a>
           </div>
-          {projects.map((project, i) => (
+          {portfolio.projects.map((project, i) => (
             <ProjectRow key={project.id} project={project} first={i === 0} />
           ))}
         </section>

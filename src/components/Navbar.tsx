@@ -45,7 +45,7 @@ export default function Navbar() {
       >
         Menu <Menu size={17} />
       </button>
-      <dialog ref={menu} className="index" aria-label="Site menu">
+      <dialog ref={menu} className="index" aria-label="Site menu" data-lenis-prevent>
         <button
           className="close"
           aria-label="Close menu"

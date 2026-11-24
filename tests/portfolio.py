@@ -2,7 +2,7 @@
 import os
 from playwright.sync_api import expect, sync_playwright
 
-base = os.environ.get("PORTFOLIO_URL", "http://localhost:5173").rstrip("/")
+base = os.environ.get("PORTFOLIO_URL", "http://localhost:5173/portfolio.html").rstrip("/")
 errors = []
 
 with sync_playwright() as p:
@@ -24,7 +24,7 @@ with sync_playwright() as p:
     trace = page.locator("details[open] .trace")
     expect(trace).to_have_css("stroke-dasharray", "0px, 100px")
     page.get_by_role("link", name="Explore my work").click()
-    expect(page).to_have_url(f"{base}/#work")
+    expect(page).to_have_url(f"{base}#work")
     page.wait_for_function("parseFloat(getComputedStyle(document.querySelector('details[open] .trace')).strokeDasharray) > 50")
     projects = page.locator(".project-row")
     expect(projects).to_have_count(4)
@@ -43,6 +43,7 @@ with sync_playwright() as p:
     page.emulate_media(reduced_motion="no-preference")
     page.locator("#top").evaluate("el => el.scrollIntoView({behavior: 'instant'})")
     expect(scene).to_have_attribute("data-ready", "true")
+    page.close()
 
     mobile = browser.new_page(viewport={"width": 390, "height": 844}, has_touch=True, reduced_motion="reduce")
     mobile.on("pageerror", lambda error: errors.append(str(error)))
@@ -64,7 +65,7 @@ with sync_playwright() as p:
     device.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 200, "y": 420}]})
     for y in (390, 350, 300, 240):
         device.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": 200, "y": y}]})
-    device.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+    device.send("Input.dispatchTouchEvent", {"type": "touchCancel", "touchPoints": []})
     mobile.wait_for_function("window.scrollY > 0")
     mobile.emulate_media(reduced_motion="reduce")
     mobile.evaluate("scrollTo({top: 0, behavior: 'instant'})")
@@ -79,7 +80,7 @@ with sync_playwright() as p:
     expect(dialog).not_to_be_visible()
     menu.tap()
     dialog.get_by_role("link", name="About").tap()
-    expect(mobile).to_have_url(f"{base}/#about")
+    expect(mobile).to_have_url(f"{base}#about")
     expect(dialog).not_to_be_visible()
     mobile.locator(".valley img").evaluate("img => img.decode()")
     assert mobile.locator(".valley img").evaluate("img => img.naturalWidth > 0")

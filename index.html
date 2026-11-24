@@ -1,17 +1,33 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#080f16" />
-    <meta name="description" content="Explore Debashis Das’s work in software, algorithms, and machine learning, accompanied by the cybernetic Ghost Lynx." />
+    <meta name="description" content="Explore Debashis Das’s work in software, algorithms, and machine learning." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preload" href="/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin />
     <title>Curious, Compiled. — Debashis Das</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <canvas id="webgl" aria-hidden="true"></canvas>
+    <main id="scroll-container">
+      <section class="track">
+        <h1>Event Horizon</h1>
+      </section>
+      <section class="track">
+        <h2>Accretion</h2>
+      </section>
+      <section class="track track-work">
+        <h2>Orbital Mechanics</h2>
+      </section>
+      <section class="track">
+        <h2>Singularity</h2>
+      </section>
+      <section class="track" aria-hidden="true" inert>
+        <h1>Event Horizon</h1>
+      </section>
+    </main>
+    <div id="runtime" hidden></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
