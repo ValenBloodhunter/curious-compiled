@@ -20,7 +20,7 @@ function start(canvas: HTMLCanvasElement, container: HTMLElement) {
 
   const scroll = createScroll(container)
   const input = createInput()
-  const choreography = new Choreography()
+  const choreography = scene && gargantua && new Choreography(gargantua, scene)
   const motionUI = new MotionUI()
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
   let startTime: number | undefined
@@ -41,7 +41,7 @@ function start(canvas: HTMLCanvasElement, container: HTMLElement) {
       reducedMotion,
     })
 
-    choreography.update(next)
+    choreography?.update(next)
     gargantua?.update(next)
     motionUI.update(next)
     if (gargantua) scene?.render(next, gargantua.diskTilt, gargantua.warpVelocity)

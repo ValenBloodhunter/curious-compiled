@@ -78,6 +78,14 @@ export class SceneManager {
     this.composer.setSize(width, height)
   }
 
+  setBloomStrength(strength: number) {
+    this.bloom.strength = strength
+  }
+
+  setParticleMorph(wave: number, ring: number, collapse: number) {
+    this.particles.setMorph(wave, ring, collapse)
+  }
+
   render(state: State, diskTilt: number, warpVelocity: number) {
     if (!state.reducedMotion) {
       this.frameTime += (state.delta - this.frameTime) * 0.06

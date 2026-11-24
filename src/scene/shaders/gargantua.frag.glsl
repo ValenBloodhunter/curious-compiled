@@ -6,6 +6,9 @@ uniform float uTime;
 uniform float uScrollVelocity;
 uniform float uTurbulence;
 uniform float uColorTemp;
+uniform float uDissolve;
+uniform float uRingPulse;
+uniform float uDiskEmission;
 
 varying vec2 vScreen;
 
@@ -111,6 +114,7 @@ void main() {
         if (hitU > 0.0) {
           vec3 hit = radial * cos(plane) + tangent * sin(plane);
           vec4 sampleColor = disk(1.0 / hitU, hit, normal, radial);
+          sampleColor.a *= uDiskEmission;
           light += transmission * sampleColor.rgb * sampleColor.a;
           transmission *= 1.0 - sampleColor.a;
         }
@@ -135,8 +139,11 @@ void main() {
   float edge = (impact - 1.009) / ringWidth;
   float ring = exp(-edge * edge) * smoothstep(1.0 - pixel, 1.0 + pixel, impact);
   float beaming = 0.67 + 0.33 * smoothstep(-0.85, 0.75, -vScreen.x / max(uZoom.y, 0.05));
-  light += transmission * WHITE_GOLD * ring * beaming * 2.0;
-  if (!captured) light += transmission * vec3(0.78, 0.78, 0.83) * stars(skyRay);
+  light += transmission * WHITE_GOLD * ring * beaming * (2.0 + 0.55 * uRingPulse);
+  light *= 1.0 - uDissolve;
+  float sky = captured ? 0.0 : stars(skyRay) * transmission;
+  if (uDissolve > 0.0) sky = mix(sky, stars(ray), uDissolve);
+  light += vec3(0.78, 0.78, 0.83) * sky;
 
   gl_FragColor = vec4(VOID + light, 1.0);
 }

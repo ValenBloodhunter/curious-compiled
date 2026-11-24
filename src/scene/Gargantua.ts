@@ -13,6 +13,9 @@ export class Gargantua {
     uScrollVelocity: { value: 0 },
     uTurbulence: { value: 0.84 },
     uColorTemp: { value: 0 },
+    uDissolve: { value: 0 },
+    uRingPulse: { value: 0 },
+    uDiskEmission: { value: 1 },
   }
   readonly mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(2, 2),
@@ -37,6 +40,7 @@ export class Gargantua {
   private scale = 1
   private hover = 0
   private warp = 1
+  private fovBreathing = 0
 
   constructor(camera: THREE.PerspectiveCamera) {
     this.camera = camera
@@ -71,6 +75,22 @@ export class Gargantua {
     this.warp = THREE.MathUtils.clamp(factor, 0, 3)
   }
 
+  setFovBreathing(degrees: number) {
+    this.fovBreathing = THREE.MathUtils.clamp(degrees, 0, 3)
+  }
+
+  setDissolve(amount: number) {
+    this.uniforms.uDissolve.value = THREE.MathUtils.clamp(amount, 0, 1)
+  }
+
+  setRingPulse(amount: number) {
+    this.uniforms.uRingPulse.value = THREE.MathUtils.clamp(amount, 0, 1)
+  }
+
+  setDiskEmission(amount: number) {
+    this.uniforms.uDiskEmission.value = THREE.MathUtils.clamp(amount, 0, 1)
+  }
+
   get diskTilt() {
     return this.uniforms.uDiskTilt.value
   }
@@ -80,19 +100,18 @@ export class Gargantua {
   }
 
   update(state: State) {
-    const pointer = state.reducedMotion ? 0 : 1
-    const azimuth = this.azimuth + 0.045 * state.mouse.x * pointer
-    const elevation = this.elevation + 0.027 * state.mouse.y * pointer
-    const horizontal = this.distance * Math.cos(elevation)
+    const horizontal = this.distance * Math.cos(this.elevation)
     this.camera.position.set(
-      horizontal * Math.sin(azimuth),
-      this.distance * Math.sin(elevation),
-      horizontal * Math.cos(azimuth),
+      horizontal * Math.sin(this.azimuth),
+      this.distance * Math.sin(this.elevation),
+      horizontal * Math.cos(this.azimuth),
     )
     this.camera.lookAt(this.target)
     const zoom = this.scale * THREE.MathUtils.clamp(this.camera.aspect / 1.06, 0.45, 1)
-    if (this.camera.zoom !== zoom) {
+    const fov = 36 + this.fovBreathing
+    if (this.camera.zoom !== zoom || this.camera.fov !== fov) {
       this.camera.zoom = zoom
+      this.camera.fov = fov
       this.camera.updateProjectionMatrix()
     }
 
